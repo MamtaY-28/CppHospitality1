@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hotel Management</title>
+    <!-- BOOTSTRAP STYLES-->
+    <link href="static/assets/css/bootstrap.css" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="static/assets/css/font-awesome.css" rel="stylesheet" />
+    <!-- MORRIS CHART STYLES-->
+    <link
+      href="static/assets/js/morris/morris-0.4.3.min.css"
+      rel="stylesheet"
+    />
+    <!-- Include jQuery library (place this in the <head> or before the closing </body> tag) -->
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- CUSTOM STYLES-->
+    <link href="static/assets/css/custom.css" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link
+      href="http://fonts.googleapis.com/css?family=Open+Sans"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <style>
+    .col-md-9 {
+        width: 100%;
+    }</style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <nav
+        class="navbar navbar-default navbar-cls-top"
+        role="navigation"
+        style="margin-bottom: 0"
+      >
+        <div class="navbar-header">
+          <button
+            type="button"
+            class="navbar-toggle"
+            data-toggle="collapse"
+            data-target=".sidebar-collapse"
+          >
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          {% if current_user_role == 'Manager' %}
+            <a class="navbar-brand" href="#">Manager</a>
+          {% else %}
+            <a class="navbar-brand" href="#">Admin</a>
+          {% endif %}
+        </div>
+        <div
+          style="float: right;">
+          <a href="/logout" class="btn btn-danger square-btn-adjust">Logout</a>
+        </div>
+      </nav>
+      <!-- /. NAV TOP  -->
+      <nav class="navbar-default navbar-side" role="navigation">
+        <div class="sidebar-collapse">
+          <ul class="nav" id="main-menu">
+          
+            <li>
+              <a  href="/dashboard"
+                ><i class="fa fa-dashboard fa-3x"></i> Dashboard</a
+              >
+            </li>
+            {% if current_user_role == 'Admin' %}
+            <li>
+              <a href="/dashboard/users"
+                ><i class="fa fa-user fa-3x"></i>User</a
+              >
+            </li>
+            {% endif %}
+            <li>
+              <a href="/dashboard/rooms"
+                ><i class="fa fa-bars fa-3x"></i> Rooms</a
+              >
+            </li>
+            <li>
+              <a href="/dashboard/booking"
+                ><i class="fa fa-rocket fa-3x"></i> Booking</a
+              >
+            </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+      <!-- /. NAV SIDE  -->
+      <div id="page-wrapper">
+        <div id="page-inner">
+          <div class="row">
+            <div class="col-md-12">
+          <h2>Users Dashboard</h2>
+            </div>
+          </div>
+          <hr>
+            <!-- Display flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <ul class="flash-message">
+                  {% for category, message in messages %}
+                  <div class="alert alert-{{category}}" role="alert">
+                    {{message}}
+                  </div>
+                  {% endfor %}
+                </ul>
+              {% endif %}
+          {% endwith %}
+          <!-- /. ROW  -->
+          <div class="col-md-9 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Users Data </div>
+              <div class="panel-body">
+                <form action="/dashboard/users/add" method="post" enctype="multipart/form-data">
+                  <div class="form-row">
+                    <div class="form-group col-md-4">
+                      <label for="inputEmail4">Full Name</label>
+                      <input type="text" id="fname" name="fullName" required class="form-control" placeholder="Name" minlength="3">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="inputEmail4">Username</label>
+                      <input type="text" name="username" required class="form-control" placeholder="Username" minlength="3">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="inputPassword4">Email</label>
+                      <input type="email" name="email" class="form-control" id="email" required placeholder="mamtarryadav@gmail.com">
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-4">
+                      <label for="inputPassword4">Role</label>
+                      <select class="form-control" aria-label="Default select example" name="userRole" id="role" required>
+                        <option value="">Select Role</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Manager">Manager</option>
+                      </select>
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="inputPassword4">Phone Number</label>
+                      <input type="text" name="phone" class="form-control" id="inputPassword4" placeholder="+09111111112" minlength="14">
+                    </div>
+                    <div class="form-group col-md-4">
+                      <label for="inputPassword4">Password</label>
+                      <input type="password" required class="form-control" id="password" requiredplaceholder="Password" minlength="8" name="password">
+                    </div>
+                  </div>
+                  <div style="
+                  float: right;
+                  margin-bottom: 20px;
+              "> <input type="submit" class="btn btn-primary" value="Add User"></input></div>
+                </form>
+              </div>
+              </div>
+              </div>
+          
+          <hr />
+          <div class="col-md-9 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Users Data </div>
+              <div class="panel-body">
+                <div class="table-responsive">
+                  <table
+                    class="table table-striped table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone No</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for user in users %}
+                        
+                      <tr>
+                          <td>{{loop.index}}</td>
+                          <td>{{ user.fullName.S }}</td>
+                          <td>{{ user.username.S }}</td>
+                          <td>{{ user.email.S }}</td>
+                          <td>{{ user.phone.S }}</td>
+                          <td>{{ user.userRole.S }}</td>
+                          <td colspan="2"> 
+                              <a href="/dashboard/users/edit?username={{user.username.S}}" class="btn btn-success">Edit</a>
+                              <a href="/dashboard/users/remove/{{user.username.S}}" class="btn btn-danger">Delete</a>
+                          </td>    
+                      </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+          <!-- /. ROW  -->
+          <hr />
+         
+          <!-- /. ROW  -->
+          
+           
+          </div>
+          </div>
+          <!-- /. ROW  -->
+        </div>
+        <!-- /. PAGE INNER  -->
+      </div>
+      <!-- /. PAGE WRAPPER  -->
+    </div>
+     <!-- Function to hide the flash message after a specified time (in milliseconds) -->
+     <script>
+      function hideFlashMessage() {
+        setTimeout(function () {
+          $('.flash-message').fadeOut();
+        }, 5000); // 5000 milliseconds (5 seconds) - adjust this value as needed
+      }
+
+      // Call the hideFlashMessage function when the page is ready
+      $(document).ready(function() {
+        hideFlashMessage();
+      });
+  </script>
+
+    <!-- /. WRAPPER  -->
+    <!-- SCRIPTS -AT THE BOTOM TO REDUCE THE LOAD TIME-->
+    <!-- JQUERY SCRIPTS -->
+    <script src="static/assets/js/jquery-1.10.2.js"></script>
+    <!-- BOOTSTRAP SCRIPTS -->
+    <script src="static/assets/js/bootstrap.min.js"></script>
+    <!-- METISMENU SCRIPTS -->
+    <script src="static/assets/js/jquery.metisMenu.js"></script>
+    <!-- MORRIS CHART SCRIPTS -->
+    <script src="static/assets/js/morris/raphael-2.1.0.min.js"></script>
+    <script src="static/assets/js/morris/morris.js"></script>
+    <!-- CUSTOM SCRIPTS -->
+    <script src="static/assets/js/custom.js"></script>
+  </body>
+</html>
